@@ -71,9 +71,25 @@ ul {
 }
 
 .menu__item {
+    position: relative;
     color: #c8d6e5;
     font-size: 20px;
     transition: color .15s;
+}
+
+.menu__item::before, .menu__item::after {
+    content: '';
+    position: absolute;
+    bottom: -5px;
+    height: 2px;
+    background-color: #fff;
+    width: 0;
+    transform:translateX(-50%);
+    transition: width .3s;
+}
+
+.menu__item::after {
+    left: 50%;
 }
 
 .menu__item:not(:last-child) {
@@ -82,6 +98,10 @@ ul {
 
 .menu__item:hover {
     color: #fff;
+}
+
+.menu__item:hover.menu__item::after {
+    width: 100%;
 }
 
 .main {
