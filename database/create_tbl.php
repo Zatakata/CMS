@@ -38,7 +38,16 @@
   }
 
 // ***  Таблица КАТЕГОРИЯ СТАТЬИ
-
+$str_sql = 'create table kat_stat (id mediumint unsigned auto_increment primary key, name char(200) default "", prim text, unique key(name))';
+  if(!mysqli_query($dbd,$str_sql)){
+    echo 'Ошибка создания таблицы kat_stat '. mysqli_error($dbd).'<br>';
+  }else{
+    if(!mysqli_query($dbd, 'insert into kat_stat (name) values ("администратор"), ("редактор"), ("автор")')){
+      echo 'Ошибка добавления в таблицу kat_stat '. mysqli_error($dbd).'<br>';    
+    }else{
+      echo 'Таблица kat_stat - создана!<br>';
+    }
+  }
 
 // ***  Таблица СТАТЬЯ
 
