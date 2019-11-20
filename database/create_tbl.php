@@ -49,7 +49,7 @@
 // *** Функция соединения с БД   
 function cdb(){
   // Возвращает номер соединения или 0 (в случае неудачи)
-   $dbd = mysqli_connect('localhost','cms','va5tin9rog');
+   $dbd = mysqli_connect('localhost','cms','123');
    // проверка успешности соединения
    if(!$dbd){
       return 0;
