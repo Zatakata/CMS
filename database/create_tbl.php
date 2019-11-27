@@ -1,8 +1,8 @@
 ﻿<?php
   set_time_limit(72000);
   $dbd = cdb();
-   mysqli_query($dbd,'drop database cms');
-   mysqli_query($dbd,'create database cms');
+   mysqli_query($dbd,'drop database if exists cms');
+   mysqli_query($dbd,'create database if not exists cms');
    mysqli_query($dbd,'use cms');
 
 // ***  Таблица РОЛЬ   
@@ -10,7 +10,7 @@
   if(!mysqli_query($dbd,$str_sql)){
     echo 'Ошибка создания таблицы role '. mysqli_error($dbd).'<br>';
   }else{
-    if(!mysqli_query($dbd, 'insert into role (name) values ("администратор"), ("редактор"), ("автор")')){
+    if(!mysqli_query($dbd, 'insert into role (name) values ("администратор"), ("редактор"), ("автор"),("читатель")')){
       echo 'Ошибка добавления в таблицу role '. mysqli_error($dbd).'<br>';    
     }else{
       echo 'Таблица role - создана!<br>';
@@ -29,7 +29,8 @@
     $str_sql = 'insert into user (login,parol,role_id,fam,name,otch, e_mail) values 
                 ("admin","'.$parol.'",1,"Иванов","Иван","Иванович","ddd@yandex.ru")
                 ,("redaktor","'.$parol.'",2,"Петров","Петр","Петрович","petrd@yandex.ru")
-                ,("avtor","' . $parol .'",3,"Зуев","Леонид","Гердович","zuid@yandex.ru")  ';
+                ,("avtor","' . $parol .'",3,"Зуев","Леонид","Гердович","zuid@yandex.ru")  
+				,("reader","' . $parol .'",4,"Тотиев","Иван","Гердович","tuid@yandex.ru")  ';
     if(!mysqli_query($dbd,$str_sql)){
       echo 'Ошибка добавления в таблицу user '. mysqli_error($dbd).'<br>';    
     }else{
@@ -42,17 +43,28 @@ $str_sql = 'create table kat_stat (id mediumint unsigned auto_increment primary 
   if(!mysqli_query($dbd,$str_sql)){
     echo 'Ошибка создания таблицы kat_stat '. mysqli_error($dbd).'<br>';
   }else{
-    if(!mysqli_query($dbd, 'insert into kat_stat (name) values ("администратор"), ("редактор"), ("автор")')){
+    if(!mysqli_query($dbd, 'insert into kat_stat (name) values ("Спорт"), ("Политика"), ("Экономика")')){
       echo 'Ошибка добавления в таблицу kat_stat '. mysqli_error($dbd).'<br>';    
     }else{
       echo 'Таблица kat_stat - создана!<br>';
     }
   }
 
-// ***  Таблица СТАТЬЯ
-
+// ***  Таблица СТАТЬЯ !!!
+$str_sql = 'create table stat (id )';
+  if(!mysqli_query($dbd,$str_sql)){
+    echo 'Ошибка создания таблицы kat_stat '. mysqli_error($dbd).'<br>';
+  }else{
+    if(!mysqli_query($dbd, 'insert into kat_stat (name) values ("Спорт"), ("Политика"), ("Экономика")')){
+      echo 'Ошибка добавления в таблицу stat '. mysqli_error($dbd).'<br>';    
+    }else{
+      echo 'Таблица stat - создана!<br>';
+    }
+  }
   
 
+  
+  
   
   
 // *** Функция соединения с БД   
