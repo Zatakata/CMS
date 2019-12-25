@@ -41,9 +41,10 @@
 
 // ***  Таблица КАТЕГОРИЯ СТАТЬИ
 $str_sql = 'create table kat_stat (id mediumint unsigned auto_increment primary key
-                                , name char(200) default ""
-                                , prim text
-                                , unique key(name))';
+                        , name char(200) default ""
+                        , prim text
+						, user_id mediumint unsigned		
+                        , unique key(name))';
   if(!mysqli_query($dbd,$str_sql)){
     echo 'Ошибка создания таблицы kat_stat '. mysqli_error($dbd).'<br>';
   }else{
@@ -66,6 +67,7 @@ $str_sql = 'create table stat (id int unsigned primary key auto_increment
                     , content mediumtext comment "содержание (текст статьи)"
                     , place char(100) default "" comment "место рапсоложения статьи (в каком блоке)"
                     , prim text
+					, user_id mediumint unsigned		
                     , unique key(name), key(autor_id), key(kat_id), key(dt_start), key(dt_end), key(status), key(main), key(place)
                     , fulltext key(name)
                     , fulltext key(content)
@@ -89,9 +91,108 @@ $str_sql = 'create table stat (id int unsigned primary key auto_increment
       echo 'Таблица stat - создана!<br>';
     }
   }
+
+ mysqli_query($dbd, 'drop database if exists cms_log ');
+ mysqli_query($dbd, 'create database cms_log ');
+ 
+$str_sql = 'create table cms_log.userlog 
+		(id int unsigned primary key auto_increment
+		, user_id mediumint unsigned
+		, tbl_nm char(50) default ""
+		, oper char(50) default ""
+		, dt_oper timestamp default current_timestamp )';
+		
+  if(!mysqli_query($dbd,$str_sql)){
+    echo 'Ошибка создания таблицы userlog '. mysqli_error($dbd).'<br>';
+  }else{
+    echo 'Таблица userlog - создана!<br>';
+  }  
+ 
   
+$str_sql = 'create table cms_log.kat_stat_log 
+		like kat_stat';
+  if(!mysqli_query($dbd,$str_sql)){
+    echo 'Ошибка создания таблицы kat_stat_log '. mysqli_error($dbd).'<br>';
+  }else{
+	$str_sql = "alter table cms_log.kat_stat_log 
+		  drop primary key
+		, change id id mediumint unsigned
+		, drop index name
+		, add log_id int unsigned
+		, add key(log_id) ";
+	  
+    if(!mysqli_query($dbd, $str_sql )){
+      echo 'Ошибка в таблице  '. mysqli_error($dbd).'<br>';    
+    }else{
+      echo 'Таблица kat_stat_log - создана!<br>';
+    }
+  }  
+
+
+  $str_sql = 'create trigger ins_kat_stat 
+					after insert on kat_stat
+		for each row
+			begin
+				insert into cms_log.userlog
+					set tbl_nm="kat_stat"
+					, user_id = new.user_id
+					, oper="insert";
+				select last_insert_id() into @last;
+				insert into cms_log.kat_stat_log
+					(id, log_id, name, prim, user_id) values 
+					(new.id, @last, new.name, new.prim, new.user_id);
+		
+			end;';
+  if(!mysqli_query($dbd,$str_sql)){
+    echo 'Ошибка создания триггера kat_stat_log '. mysqli_error($dbd).'<br>';
+  }else{
+	echo 'Все ОК!';
+  }
 
   
+
+  $str_sql = 'create trigger upd_kat_stat 
+					before update on kat_stat
+		for each row
+			begin
+				insert into cms_log.userlog
+					set tbl_nm="kat_stat"
+					, user_id = new.user_id
+					, oper="update";
+				select last_insert_id() into @last;
+				insert into cms_log.kat_stat_log
+					(id, log_id, name, prim, user_id) values 
+					(old.id, @last, old.name, old.prim, old.user_id)
+					,(new.id, @last, new.name, new.prim, new.user_id);
+		
+			end;';
+  if(!mysqli_query($dbd,$str_sql)){
+    echo 'Ошибка создания триггера upd_kat_stat '. mysqli_error($dbd).'<br>';
+  }else{
+	echo 'Все ОК!';
+  }
+  
+  
+  
+  $str_sql = 'create trigger del_kat_stat 
+					after delete on kat_stat
+		for each row
+			begin
+				insert into cms_log.userlog
+					set tbl_nm="kat_stat"
+					, user_id = new.user_id
+					, oper="delete";
+				select last_insert_id() into @last;
+				insert into cms_log.kat_stat_log
+					(id, log_id, name, prim, user_id) values 
+					(old.id, @last, old.name, old.prim, old.user_id);
+		
+			end;';
+  if(!mysqli_query($dbd,$str_sql)){
+    echo 'Ошибка создания триггера del_kat_stat '. mysqli_error($dbd).'<br>';
+  }else{
+	echo 'Все ОК!';
+  }
   
   
   
